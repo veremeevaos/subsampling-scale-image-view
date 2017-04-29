@@ -285,7 +285,7 @@ public class SubsamplingScaleImageView extends View {
 
     public SubsamplingScaleImageView(Context context, AttributeSet attr) {
         super(context, attr);
-        density = getResources().getDisplayMetrics().density;
+        density = getDisplayMetrics().density;
         setMinimumDpi(160);
         setDoubleTapZoomDpi(160);
         setGestureDetector(context);
@@ -330,7 +330,7 @@ public class SubsamplingScaleImageView extends View {
             typedAttr.recycle();
         }
 
-        quickScaleThreshold = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, context.getResources().getDisplayMetrics());
+        quickScaleThreshold = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, getDisplayMetrics());
     }
 
     public SubsamplingScaleImageView(Context context) {
@@ -1325,7 +1325,7 @@ public class SubsamplingScaleImageView extends View {
      */
     private int calculateInSampleSize(float scale) {
         if (minimumTileDpi > 0) {
-            DisplayMetrics metrics = getResources().getDisplayMetrics();
+            DisplayMetrics metrics = getDisplayMetrics();
             float averageDpi = (metrics.xdpi + metrics.ydpi)/2;
             scale = (minimumTileDpi/averageDpi) * scale;
         }
@@ -2335,7 +2335,7 @@ public class SubsamplingScaleImageView extends View {
      * @param dpi Source image pixel density at maximum zoom.
      */
     public final void setMinimumDpi(int dpi) {
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        DisplayMetrics metrics = getDisplayMetrics();
         float averageDpi = (metrics.xdpi + metrics.ydpi)/2;
         setMaxScale(averageDpi/dpi);
     }
@@ -2346,7 +2346,7 @@ public class SubsamplingScaleImageView extends View {
      * @param dpi Source image pixel density at minimum zoom.
      */
     public final void setMaximumDpi(int dpi) {
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        DisplayMetrics metrics = getDisplayMetrics();
         float averageDpi = (metrics.xdpi + metrics.ydpi)/2;
         setMinScale(averageDpi / dpi);
     }
@@ -2374,7 +2374,7 @@ public class SubsamplingScaleImageView extends View {
      * @param minimumTileDpi Tile loading threshold.
      */
     public void setMinimumTileDpi(int minimumTileDpi) {
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        DisplayMetrics metrics = getDisplayMetrics();
         float averageDpi = (metrics.xdpi + metrics.ydpi)/2;
         this.minimumTileDpi = (int)Math.min(averageDpi, minimumTileDpi);
         if (isReady()) {
@@ -2587,7 +2587,7 @@ public class SubsamplingScaleImageView extends View {
      * @param dpi New value for double tap gesture zoom scale.
      */
     public final void setDoubleTapZoomDpi(int dpi) {
-        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        DisplayMetrics metrics = getDisplayMetrics();
         float averageDpi = (metrics.xdpi + metrics.ydpi)/2;
         setDoubleTapZoomScale(averageDpi/dpi);
     }
@@ -2668,6 +2668,16 @@ public class SubsamplingScaleImageView extends View {
                 onStateChangedListener.onCenterChanged(getCenter(), origin);
             }
         }
+    }
+
+    private DisplayMetrics getDisplayMetrics() {
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+
+        // workaround for Xiaomi Redmi 4 Note bug
+        displayMetrics.xdpi = displayMetrics.xdpi > 1? displayMetrics.xdpi : displayMetrics.xdpi * 1000;
+        displayMetrics.ydpi = displayMetrics.ydpi > 1? displayMetrics.ydpi : displayMetrics.ydpi * 1000;
+
+        return displayMetrics;
     }
 
     /**
